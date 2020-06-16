@@ -19,7 +19,7 @@ public class MoveBoat : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-		Cursor.visible = false;
+		Cursor.visible = true;
 		//settings
 		EndofSessionPanel.SetActive(false);
 		Settings.reverseHands = true;

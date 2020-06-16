@@ -20,7 +20,7 @@ public class GetStimulus : MonoBehaviour {
 		rightarrow.enabled = false;
 		EndofSessionPanel.SetActive(false);
 
-		Cursor.visible = false;
+		Cursor.visible = true;
 	}
 	
 	// Update is called once per frame
