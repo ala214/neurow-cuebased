@@ -9,12 +9,12 @@ public class WayPoints : MonoBehaviour
 
 	string trajectory = "";
 
-	int[] directions = new int[] {1, 1, 1, -1, -1, -1};
-	int[] randir = new int[] {1, -1};
+//	int[] directions = new int[] {1, 1, 1, -1, -1, -1};
+//	int[] randir = new int[] {1, -1};
 	int direction = 0;
 	int i = 0;
-	int rand;
-	int randDir;
+//	int rand;
+//	int randDir;
 
 //	Vector3 pos1 = new Vector3(-55, 1, 200);
 //	Vector3 pos2 = new Vector3(0, 1, 400);
@@ -24,7 +24,7 @@ public class WayPoints : MonoBehaviour
 //	Vector3 pos6 = new Vector3(0, 1, 1200);
 
 	Vector3[] targetPositions1;
-	Vector3[] targetPositions2;
+//	Vector3[] targetPositions2;
 
 	// Use this for initialization
 	void Start ()
@@ -56,40 +56,40 @@ public class WayPoints : MonoBehaviour
 	{
 		if(other.GetComponent<Collider>().tag == "Player")
 		{
-			Scoring.Add();
+			//Scoring.Add();
 			NewPosition();
 //			newPositionFixed();
 			GetComponent<AudioSource>().Play(); 
 		}
 	}
 
-	void newPositionFixed()
-	{
-		if (i <= 5)
-		{
-			if(Settings.noAPE)
-				waypoint.position = targetPositions1[i];
-			else
-				waypoint.position = targetPositions2[i];
-
-			i++;
-		}
-		else
-		{
-			//	end game session
-			//			Destroy(gameObject);
-		}
-	}
+//	void newPositionFixed()
+//	{
+//		if (i <= 5)
+//		{
+//			if(Settings.noAPE)
+//				waypoint.position = targetPositions1[i];
+//			else
+//				waypoint.position = targetPositions2[i];
+//
+//			i++;
+//		}
+//		else
+//		{
+//			//	end game session
+//			//			Destroy(gameObject);
+//		}
+//	}
 
 	void NewPosition()
 	{
 //		direction = 0;
 //		while(direction == 0 && i <= 1000)
 //		{
-			rand = Random.Range(1,6);
-			randDir = randir[Random.Range(0,2)];
+			//rand = Random.Range(1,6);
+			//randDir = randir[Random.Range(0,2)];
 //			Debug.Log (i + " | " + rand+" " + randDir);
-			direction = directions[rand];
+			//direction = directions[rand];
 //			direction = rand;
 //			directions[rand] = 0;
 //			if(direction != 0)
@@ -101,13 +101,16 @@ public class WayPoints : MonoBehaviour
 			Vector3 playerPos = player.position;
 			Vector3 playerDirection = player.forward;
 			//		float spawnDistance = Random.Range(180, 250);
-			float spawnDistance = 200;
+			float spawnDistance = 55;
 			waypoint.rotation = player.rotation;
 			waypoint.position = playerPos + playerDirection * spawnDistance;
 			//		waypoint.Translate(Vector3.right * Random.Range(30, 65) * dir, Camera.main.transform);
-			spawnDistance = 55;
-			waypoint.Translate (Vector3.right * randDir * spawnDistance , Camera.main.transform);
+			//spawnDistance = 55;
+			spawnDistance = 1;
+			//waypoint.Translate (Vector3.right * randDir * spawnDistance , Camera.main.transform);
+			waypoint.Translate (Vector3.right * playerDirection.magnitude * spawnDistance , Camera.main.transform);
 			waypoint.position = new Vector3 (waypoint.position.x, 0.8f,waypoint.position.z);
+
 //		}
 //		else
 //		{
@@ -120,7 +123,10 @@ public class WayPoints : MonoBehaviour
 	{
 		string fileName = "trajectory_" + System.DateTime.Now.Year + "-" + System.DateTime.Now.Month + "-" + System.DateTime.Now.Day + "_" + System.DateTime.Now.Hour + "-" + System.DateTime.Now.Minute + "-" + System.DateTime.Now.Second;
 //		print(Application.persistentDataPath);
-		System.IO.File.AppendAllText(Settings.logDir+"\\" + fileName + ".txt", trajectory);
+
+//---------------------------------------------------------------------------		
+//	WILL NEED TO COME BACK AND FIX FOR LOG SAVING FROM MAIN MENU		
+//		System.IO.File.AppendAllText(Settings.logDir+"\\" + fileName + ".txt", trajectory);
 	}
 
 }

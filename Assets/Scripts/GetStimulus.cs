@@ -52,7 +52,7 @@ public class GetStimulus : MonoBehaviour {
 	void getStim()
 	{
 		int stim = Receivemarkers.markerint;
-
+		
 		switch (stim)
 		{
 		case 800: //hide cross

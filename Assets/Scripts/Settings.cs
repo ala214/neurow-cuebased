@@ -9,10 +9,14 @@ public class Settings : MonoBehaviour
 	public GameObject gui;
 	public GameObject scoregui;
 	public GameObject traininggui;
-	public GameObject waypoint;
+	public GameObject waypoint; 
 	public GameObject arrow;
+//	public GameObject fireworks;
 	
-	public GameObject leap, hands;
+	public GameObject leap, hands, cross, leftarrow, rightarrow;
+	public GameObject rMaleHand, lMaleHand, rFemaleHand, lFemaleHand;
+
+	//public GameObject rewardtext;
 	
 	public static bool leapOn = false;
 	public static bool isTraining = false;
@@ -21,13 +25,31 @@ public class Settings : MonoBehaviour
 
 	public static GameObject MainCamera, OculusCamera;
 
+	public Vector3 scaleChange;
+
+	// object reference required to access non-static member "Settings.cross"
+	public static Settings Instance;
+	void Awake(){
+		Instance = this;
+	}
+	
 
 //General Settings -------------------------
 //	static float boatSpeed;
 //	static float turnSpeed;
 //	static float cutOffAngle;
 	static bool audioOn;
+	static bool musicOn;  // for future if music is used
 	public static bool reverseHands;
+	public static bool haptic;
+	public static bool male;
+	public static bool female;
+	public static bool stimS;
+	public static bool stimM;
+	public static bool stimL;
+	public static bool points;
+	public static bool percentage;
+	public static bool flash;
 //------------------------------------------
 
 //Network Settings -------------------------
@@ -38,7 +60,7 @@ public class Settings : MonoBehaviour
 
 //Network Settings -------------------------
 	public static bool oculusRift = false;
-//	static bool leapMotion;
+	static bool leapMotion;
 //------------------------------------------
 
 //Haptics Settings -------------------------
@@ -58,18 +80,30 @@ public class Settings : MonoBehaviour
 	public InputField dir;
 
 	public static AudioSource waveSound;
-	public AudioClip levelDone;
+	public AudioClip levelDone; // flag sound?
+
 
 	void Start(){
+		rMaleHand = GameObject.Find("RightHandMale");
+		lMaleHand = GameObject.Find("LeftHandMale");
+		rFemaleHand = GameObject.Find("RightHandFemale");
+		lFemaleHand = GameObject.Find("LeftHandFemale");
+		Settings.Instance.rFemaleHand.SetActive(false);
+		Settings.Instance.lFemaleHand.SetActive(false);
+//		Settings.Instance.rewardtext = GameObject.Find("RewardText");
+//		fireworks = GameObject.Find("Fireworks");
 
 		scoregui.SetActive (false);
 		traininggui.SetActive (false);
+		// will not work for Online if not commented out but needed for training
+//		Settings.Instance.rewardtext.SetActive(false);
+//		fireworks.SetActive(false);
 
 		waveSound = GetComponent<AudioSource>();
 
 		getLogDirectory ();
 
-		duration = "480";
+		duration = "492";
 		Scoring.updateDuration(duration);
 
 		MainCamera = GameObject.Find("Main Camera");
@@ -84,6 +118,7 @@ public class Settings : MonoBehaviour
 			leapOn = false;
 			noAPE = true;
 			reverseHands = true;
+			//Debug.Log("Game Mode");
 //			gamePause();
 		}
 //		else if(Application.loadedLevelName == "Game_With_APE") // BCI MODE
@@ -113,14 +148,14 @@ public class Settings : MonoBehaviour
 	void showScorePanel(){
 		scoregui.SetActive (true);
 		Time.timeScale = 0f;
-		waveSound.PlayOneShot (levelDone);
+		waveSound.PlayOneShot (levelDone);  // flag sound?
 		//Debug.Log ("SCORE!");
 	}
 
 	void showEndOfTraining(){
 		traininggui.SetActive (true);
 		Time.timeScale = 0f;
-		waveSound.PlayOneShot (levelDone);
+		waveSound.PlayOneShot (levelDone);  // flag sound?
 		//Debug.Log ("SCORE!");
 	}
 
@@ -153,7 +188,10 @@ public class Settings : MonoBehaviour
 
 	// Update is called once per frame
 	void Update () {
-
+		if (female) {
+			Settings.Instance.rFemaleHand.SetActive(true);
+			Settings.Instance.lFemaleHand.SetActive(true);
+		}
 		if (Timeout && !isTraining) {
 			//gamePause();
 			showScorePanel();
@@ -170,17 +208,17 @@ public class Settings : MonoBehaviour
 //		if(Application.loadedLevel == 2 || Application.loadedLevel == 3)
 //		{
 			//enable/disable settings panel
-			if (Input.GetKey (KeyCode.P)) {
-				gamePause();
-			}
+		if (Input.GetKey (KeyCode.P)) {
+			gamePause();
+		}
 //			if (Input.GetKey (KeyCode.L)) {
 //				gameResume();
 //			}
 //			
-			if(Input.GetKey(KeyCode.Escape))
-			{
-				Application.LoadLevel("MainMenu");
-			}
+		if(Input.GetKey(KeyCode.Escape))
+		{
+			Application.LoadLevel("MainMenu");
+		}
 			
 //			if (Input.GetKey (KeyCode.T))
 //			{
@@ -207,19 +245,21 @@ public class Settings : MonoBehaviour
 				//			gui.SetActive (false);
 				waypoint.SetActive (false);
 				arrow.SetActive (false);
+				Debug.Log("isTraining");
 			}
 			
 			if (!isTraining) {
 				//			gui.SetActive (true);
 				waypoint.SetActive (true);
 				arrow.SetActive (true);
+				Debug.Log("!isTraining");
 			}
 			
 			//enable/disable leapmotion
 			if (leapOn) {
 				leap.SetActive (true);
-			waypoint.SetActive (true);
-			arrow.SetActive (true);
+				waypoint.SetActive (true);
+				arrow.SetActive (true);
 				//	hands.SetActive (false);
 			}
 			if (!leapOn) {
@@ -266,7 +306,7 @@ public class Settings : MonoBehaviour
 	{
 		switch(name)
 		{
-		case "Audio":
+		case "BackgroundSound":
 //			print(name+": "+value);
 			audioOn = value;
 			if(audioOn)
@@ -274,9 +314,82 @@ public class Settings : MonoBehaviour
 			else
 				waveSound.Pause();
 			break;
-		case "ReverseHands":
+		case "BackgroundHap":
 			print(name+": "+value);
-			reverseHands = value;
+			haptic = value;
+			break;
+		case "BackgroundMusic":  // for future if music used
+			// figure out how to start and stop music
+			print(name+": "+value);
+			musicOn = value;
+			// turn music on and off
+			break;
+// find way to load female scene?
+		case "BackgroundMale":
+			print(name+": "+value);
+			male = value;
+			Settings.Instance.rMaleHand.SetActive(true);
+			Settings.Instance.lMaleHand.SetActive(true);
+			Settings.Instance.rFemaleHand.SetActive(false);
+			Settings.Instance.lFemaleHand.SetActive(false);
+			break;
+// or find way to switch out avatar hands
+		case "BackgroundFemale":
+			print(name+": "+value);
+			female = value;
+			Settings.Instance.rFemaleHand.SetActive(true);
+			Settings.Instance.lFemaleHand.SetActive(true);
+			Settings.Instance.rMaleHand.SetActive(false);
+			Settings.Instance.lMaleHand.SetActive(false);
+			break;
+// cross width & height = 100 && arrow width & height
+		case "BackgroundS":
+//			print(name+": "+value);
+			stimS = value;
+			//change stim size to S
+			Settings.Instance.cross.transform.localScale = new Vector3(1f,1f,1f);
+			Settings.Instance.leftarrow.transform.localScale = new Vector3(1f,1f,1f);
+			Settings.Instance.leftarrow.transform.localPosition = new Vector3(-47.3f, 98.2f, 0f);
+			Settings.Instance.rightarrow.transform.localScale = new Vector3(1f,1f,1f);
+			Settings.Instance.rightarrow.transform.localPosition = new Vector3(56.6f, 98.2f, 0f);
+//			rewardtext.GetComponent<Text>().fontSize = 30f;
+//			Settings.Instance.rewardtext.transform.localScale = new Vector3(0.5f,0.5f,1f);
+			break;
+// cross width & height = 300 && arrow width & height
+		case "BackgroundMd":
+//			print(name+": "+value);
+			stimM = value;
+			Settings.Instance.cross.transform.localScale = new Vector3(3f,3f,1f);
+			Settings.Instance.leftarrow.transform.localScale = new Vector3(3f,3f,1f);
+			Settings.Instance.leftarrow.transform.localPosition = new Vector3(-146f, 98.2f, 0f);
+			Settings.Instance.rightarrow.transform.localScale = new Vector3(3f,3f,1f);
+			Settings.Instance.rightarrow.transform.localPosition = new Vector3(156f, 98.2f, 0f);
+//			Settings.Instance.rewardtext.fontSize = 50.0f;
+//			Settings.Instance.rewardtext.transform.localScale = new Vector3(1f,1f,1f);
+			break;
+// cross width & height = 500 && arrow width & height
+		case "BackgroundL":
+			print(name+": "+value);
+			stimL = value;
+			// change stim size to L
+			Settings.Instance.cross.transform.localScale = new Vector3(5f,5f,1f);
+			Settings.Instance.leftarrow.transform.localScale = new Vector3(5f,5f,1f);
+			Settings.Instance.leftarrow.transform.localPosition = new Vector3(-247f, 98.2f, 0f);
+			Settings.Instance.rightarrow.transform.localScale = new Vector3(5f,5f,1f);
+			Settings.Instance.rightarrow.transform.localPosition = new Vector3(257f, 98.2f, 0f);
+//			Settings.Instance.rewardtext.fontSize = 75.0f;
+//			Settings.Instance.rewardtext.transform.localScale = new Vector3(2f,2f,1f);
+			break;
+		case "BackgroundFlash":
+			print(name+": "+value);
+			flash = value;
+			break;
+		case "BackgroundPoints": // reward points
+			//print(name+": "+value);
+			points = value;
+			break;
+		case "BackgroundPer": // reward accuracy percentages
+			percentage = value;
 			break;
 		case "Use":
 //			print(name+": "+value);
